@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>KW Explore CGI — How Do I Reach My Income Goal</title>
-  <meta name="description" content="Enter your profit goal and inputs, receive a one-page PDF with calls, appointments, listings, sales, and GCI targets." />
+  <meta name="description" content="Enter your profit goal and inputs to receive a one-page PDF with calls, appointments, listings, sales, and GCI targets." />
   <style>
     :root { --kw:#C70000; --bg:#111; --panel:#1a1a1a; --line:#2a2a2a; --text:#eee; --muted:#aaa; --grey:#2b2b2b; }
     * { box-sizing: border-box; }
     body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; margin:0; display:grid; place-items:center; padding:24px; }
     .app { width:100%; max-width:980px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
-    h1 { margin:0 0 4px 0; font-size:24px; line-height:1.2; }
+    h1 { margin:0 0 6px 0; font-size:24px; line-height:1.2; }
     .brand { color:var(--kw); }
     .tag { color:var(--muted); margin:0 0 16px 0; }
 
@@ -45,7 +45,7 @@
     <div class="tabs" id="tabs">
       <button class="tab active" data-panel="contact">Contact</button>
       <button class="tab" data-panel="profit">Fund Your Life (Profit Goal)</button>
-      <button class="tab" data-panel="tax">Tax</button>
+      <button class="tab" data-panel="tax">Tax (Auto @ 25%)</button>
       <button class="tab" data-panel="cos">Cost of Sales</button>
       <button class="tab" data-panel="expenses">Expenses</button>
       <button class="tab" data-panel="ratios">Listing Focus & Ratios</button>
@@ -83,16 +83,17 @@
         <h2>Fund Your Life — Profit Goal</h2>
         <label><b>Profit Goal (12 months)</b></label>
         <input name="profitGoal" required inputmode="numeric" placeholder="e.g., 1200000" />
-        <div class="muted">How much profit you want in the next 12 months.</div>
+        <div class="muted">Taxes are calculated automatically at <b>25% of Profit Goal</b>.</div>
       </section>
 
-      <!-- TAX -->
+      <!-- TAX (read-only / preview) -->
       <section class="panel" id="panel-tax">
-        <h2>Tax</h2>
+        <h2>Tax (Auto)</h2>
+        <div class="muted">We auto-calculate estimated taxes as 25% of your Profit Goal.</div>
         <div class="row">
           <div>
-            <label>Estimated Taxes (year)</label>
-            <input name="estimatedTaxes" inputmode="numeric" placeholder="e.g., 300000" />
+            <label>Estimated Taxes (25%)</label>
+            <input id="taxPreview" aria-label="Estimated Taxes" value="R 0" disabled />
           </div>
         </div>
       </section>
@@ -171,7 +172,8 @@
   </div>
 
   <script>
-    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbwpRWhsAOAcjmP6mNinJ1XV8XlDNr1BMEzAZ0yfnWwN6l79-v9mXTu6J9rG3l8_Aa1E8w/exec';
+    // NEW endpoint from Dawie
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyEqwzrSre7Y_97xRnaa79SVwghJq_U7YIe_4RisO9zH-WFXZNqIsiKKTyGo3SUM5YY-Q/exec';
 
     // Tabs
     const tabs = document.querySelectorAll('.tab');
@@ -186,7 +188,22 @@
       if (first) first.focus({preventScroll:true});
     }));
 
-    // Form
+    // Live tax preview (25% of Profit Goal)
+    const profitInput = document.querySelector('input[name="profitGoal"]');
+    const taxPreview = document.getElementById('taxPreview');
+    function formatZAR(n){
+      const x = Math.round(Number(n)||0);
+      return 'R ' + x.toLocaleString('en-ZA');
+    }
+    function updateTax(){
+      const val = (profitInput.value||'').replace(/[^0-9.]/g,'');
+      const num = Number(val||0);
+      if (taxPreview) taxPreview.value = formatZAR(num * 0.25);
+    }
+    profitInput.addEventListener('input', updateTax);
+    updateTax();
+
+    // Form submit
     const form = document.getElementById('f');
     const msg  = document.getElementById('msg');
     const btn  = document.getElementById('btn');
@@ -218,13 +235,18 @@
           const panel = invalid.closest('.panel');
           if (panel){
             const id = panel.id.replace('panel-','');
-            document.querySelector(`.tab[data-panel=\"${id}\"]`).click();
+            document.querySelector(`.tab[data-panel="${id}"]`).click();
           }
         }
         return;
       }
+
       const data = Object.fromEntries(new FormData(form).entries());
       data.cell = normaliseCell(data.cell);
+
+      // Do NOT send estimatedTaxes — backend should auto-calc 25% of profitGoal
+      delete data.estimatedTaxes;
+
       const payload = cleanPayload(data);
 
       btn.disabled = true;
@@ -238,6 +260,7 @@
         });
         msg.innerHTML = '<span class="ok">Success! Check your inbox for your PDF.</span>';
         form.reset();
+        updateTax();
       } catch (err) {
         console.error(err);
         msg.innerHTML = '<span class="err">Something went wrong. Please try again.</span>';

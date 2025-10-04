@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Career Growth (CGI) Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Inter',sans-serif;background:#333;color:#fff}
+    .calculator-container,.thank-you-container{background:#1a1a1a;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
+    .input-grey{background:#4a4a4a;color:#fff;border-color:#6b7280}
+    .input-grey::placeholder{color:#a0aec0}
+    .input-red{background:#991b1b;color:#fff;font-weight:700;border-color:#ef4444}
+    .header-bg{background:#000}
+    h1,h2,h3{color:#ef4444}
+    .btn-submit{background:#ef4444;transition:background-color .3s}
+    .btn-submit:hover{background:#dc2626}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    input[type=number]{-moz-appearance:textfield}
+  </style>
+</head>
+<body class="p-4 sm:p-8">
+  <div id="calculatorWrapper">
+    <div class="calculator-container max-w-4xl mx-auto p-6 sm:p-8 space-y-8">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold mb-2">Your Career Growth (CGI) Calculator</h1>
+        <p class="text-gray-300">At Keller Williams Realty, our mission statement is to build careers worth having, businesses worth owning, and lives worth living. After your cost of sales, expenses, and taxes, what amount of profit would fund the life you want to live this year?</p>
+      </div>
+
+      <!-- Your Details -->
+      <div class="space-y-4">
+        <h2 class="text-2xl font-semibold border-b-2 border-gray-700 pb-2">Your Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="name" placeholder="Name" class="w-full p-3 rounded-md input-grey" />
+          <input type="text" id="surname" placeholder="Surname" class="w-full p-3 rounded-md input-grey" />
+          <input type="email" id="email" placeholder="Email Address" class="w-full p-3 rounded-md input-grey" />
+          <input type="tel" id="contact" placeholder="Contact Number" class="w-full p-3 rounded-md input-grey" />
+        </div>
+        <p class="text-center text-gray-400 italic mt-2">Complete the Grey fields - The Red Fields will auto calculate for you to know: HOW TO REACH YOUR GOALS!</p>
+      </div>
+
+      <!-- Main Calculator Sections -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-6">
+          <div class="space-y-2">
+            <label for="profitGoal" class="font-medium">Profit Goal</label>
+            <input type="number" id="profitGoal" placeholder="e.g., 1000000" class="w-full p-3 rounded-md input-grey" min="0" />
+          </div>
+
+          <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Cost of Sales</h3>
+
+          <div class="grid grid-cols-2 gap-4 items-end">
+            <div>
+              <label for="averageSalePrice" class="text-sm">Average Sale Price</label>
+              <input type="number" id="averageSalePrice" placeholder="e.g., 1500000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="splitToMarketCenter" class="text-sm">Split to Market Center %</label>
+              <input type="number" id="splitToMarketCenter" placeholder="e.g., 30" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="averageCommissionRate" class="text-sm">Average Commission Rate %</label>
+              <input type="number" id="averageCommissionRate" placeholder="e.g., 5.5" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="franchiseFeeRate" class="text-sm">Franchise Fee Rate %</label>
+              <input type="number" id="franchiseFeeRate" placeholder="e.g., 8" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="companyCurrencyCap" class="text-sm">Company Currency Cap</label>
+              <input type="number" id="companyCurrencyCap" placeholder="e.g., 210000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="anticipatedTransactions" class="text-sm">Anticipated No. of Trans/Yr</label>
+              <input type="number" id="anticipatedTransactions" placeholder="e.g., 24" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
+            <label class="text-sm text-gray-400">Tax (auto-calculated @ 25%)</label>
+            <input type="text" id="tax" class="w-full p-2 rounded-md input-red" readonly />
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Calculated Values</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm">Avg Commission/Trans</label>
+              <input type="text" id="avgCommissionPerTrans" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <label class="text-sm">Avg Split Paid/Trans</label>
+              <input type="text" id="avgSplitPaidPerTrans" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <label class="text-sm">Avg Franchise Fee Paid/Trans</label>
+              <input type="text" id="avgFranchiseFeePaid" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+          </div>
+
+          <div>
+            <label for="expenses" class="font-medium">Monthly Salaries & Operating Expenses</label>
+            <input type="number" id="expenses" placeholder="e.g., 30000" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+            <label class="text-sm text-gray-400 mt-2 block">Estimated Yearly Expenses</label>
+            <input type="text" id="yearlyExpenses" class="w-full p-2 rounded-md input-red mt-1" readonly />
+          </div>
+          <div>
+            <label class="text-sm text-gray-400">Total Estimated Cost of Sales per Year</label>
+            <input type="text" id="totalCostOfSales" class="w-full p-2 rounded-md input-red mt-1" readonly />
+          </div>
+        </div>
+      </div>
+
+      <!-- GCI -->
+      <div class="header-bg p-4 rounded-lg space-y-4 text-center">
+        <h2 class="text-2xl font-bold">Total Estimated Gross Commission Income</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+          <div>
+            <p class="font-medium">GCI Goal for the Year</p>
+            <input type="text" id="gciGoalYear" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">GCI Goal for the Month</p>
+            <input type="text" id="gciGoalMonth" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Goals -->
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold border-b-2 border-gray-700 pb-2">Activity Goals to Reach Your GCI</h2>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Registrations (Listings/Buyers)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p class="font-medium">Registered (Listings/Buyers)/Year</p>
+              <input type="text" id="registeredYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <p class="font-medium">Registered (Listings/Buyers)/Month</p>
+              <input type="text" id="registeredMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Listings Taken</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div class="space-y-4">
+              <div>
+                <label class="font-medium">% of Business that is Seller Focused</label>
+                <input type="number" id="sellerFocused" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+              </div>
+              <div>
+                <label class="font-medium">Your listings taken to listings closed conversation ratio will need to be: %</label>
+                <input type="number" id="listingsToClosedRatio" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium">Listings Taken/Year Needed</p>
+                <input type="text" id="listingsTakenYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Listings Taken/Month Needed</p>
+                <input type="text" id="listingsTakenMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Number of Closed Listings/Year</p>
+                <input type="text" id="closedListingsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Listing Appointments</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div>
+              <label class="font-medium">Your listings appointments to listings taken conversation ratio will need to be: %</label>
+              <input type="number" id="appointmentsToTakenRatio" placeholder="e.g., 80" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium">Listings Appointments/Year</p>
+                <input type="text" id="appointmentsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Listings Appointments/Month</p>
+                <input type="text" id="appointmentsMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recap -->
+      <div class="header-bg p-6 rounded-lg text-center">
+        <h2 class="text-2xl font-bold mb-4">Recap - Your Monthly Goals</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div>
+            <p class="font-medium">Listings Appts</p>
+            <input type="text" id="recapAppointments" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">Listings Taken</p>
+            <input type="text" id="recapListingsTaken" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">Registered</p>
+            <input type="text" id="recapRegistered" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">GCI Goal</p>
+            <input type="text" id="recapGciGoal" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center pt-4">
+        <button id="submitBtn" class="btn-submit text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg">
+          Get My Personalised Report
+        </button>
+        <p id="statusMessage" class="mt-4 text-sm"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="thankYouScreen" class="hidden">
+    <div class="thank-you-container max-w-2xl mx-auto p-8 text-center space-y-6">
+      <h1 class="text-4xl font-bold">Thank You!</h1>
+      <p class="text-xl text-gray-300">Thank you for completing the CGI Calculator.</p>
+      <p class="text-lg text-gray-400">Keep an Eye on your Mailbox for your personalised report.</p>
+      <div class="border-t border-gray-700 pt-6">
+        <p class="text-gray-300">For more information, feel free to contact KW Explore Team Leader Dawie at:</p>
+        <a href="mailto:dawie.dutoit@kwsa.co.za" class="text-xl text-red-500 hover:text-red-400">dawie.dutoit@kwsa.co.za</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Your deployed Apps Script Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0Ye22zyu9pzbEOYT7zqB8QZ377GQmLd_88ILSTELvqG4fbUdlEp4O3W3lG7qAivM-aQ/exec";
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => input.addEventListener('input', calculate));
+
+      const { jsPDF } = window.jspdf;
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMessage = document.getElementById('statusMessage');
+
+      submitBtn.addEventListener('click', async () => {
+        const name = document.getElementById('name').value.trim();
+        const surname = document.getElementById('surname').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const contact = document.getElementById('contact').value.trim();
+
+        if (!name || !surname || !email || !contact) {
+          statusMessage.textContent = "Please fill in all your details first.";
+          statusMessage.style.color = "#f87171";
+          return;
+        }
+        if (!/^https?:\/\//i.test(SCRIPT_URL)) {
+          statusMessage.textContent = "Error: The SCRIPT_URL is not configured correctly.";
+          statusMessage.style.color = "#f87171";
+          return;
+        }
+
+        statusMessage.textContent = "Submitting, please wait...";
+        statusMessage.style.color = "#60a5fa";
+        submitBtn.disabled = true;
+
+        // --- Generate PDF ---
+        const doc = new jsPDF();
+        doc.setFillColor(239, 68, 68);
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Your Personalised CGI Report", 105, 18, { align: 'center' });
+        doc.setFontSize(14);
+        doc.text(`For: ${name} ${surname}`, 105, 26, { align: 'center' });
+
+        let y = 45;
+        const addSection = (title, data) => {
+          doc.setFontSize(16);
+          doc.setTextColor(0, 0, 0);
+          doc.text(title, 14, y);
+          doc.setLineWidth(0.5);
+          doc.line(14, y + 2, 196, y + 2);
+          y += 10;
+          doc.setFontSize(12);
+          data.forEach(item => {
+            doc.setTextColor(100, 116, 139);
+            doc.text(item.label, 20, y);
+            doc.setTextColor(0, 0, 0);
+            doc.text(item.value, 190, y, { align: 'right' });
+            y += 8;
+          });
+          y += 8;
+        };
+
+        addSection("Your Goals", [
+          { label: "Profit Goal:", value: getVal('profitGoal', true) },
+          { label: "Yearly GCI Goal:", value: getVal('gciGoalYear', true) },
+          { label: "Monthly GCI Goal:", value: getVal('gciGoalMonth', true) }
+        ]);
+
+        addSection("Monthly Activity Plan", [
+          { label: "Listings Appointments per Month:", value: getVal('recapAppointments') },
+          { label: "Listings Taken per Month:", value: getVal('recapListingsTaken') },
+          { label: "Registered (Listings/Buyers) per Month:", value: getVal('recapRegistered') }
+        ]);
+
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Report generated by the CGI Calculator.", 105, 285, { align: 'center' });
+
+        const pdfDataUri = doc.output('datauristring');
+        const pdfBase64 = pdfDataUri.substring(pdfDataUri.indexOf(',') + 1);
+
+        // --- Payload ---
+        const formData = {
+          name, surname, email, contact,
+          profitGoal: getVal('profitGoal', true),
+          gciGoalYear: getVal('gciGoalYear', true),
+          gciGoalMonth: getVal('gciGoalMonth', true),
+          recapAppointments: getVal('recapAppointments'),
+          recapListingsTaken: getVal('recapListingsTaken'),
+          recapRegistered: getVal('recapRegistered'),
+          pdfBase64,
+          fileName: `CGI_Report_${name}_${surname}.pdf`
+        };
+
+        try {
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' }, // avoids CORS preflight
+            body: JSON.stringify(formData)
+          });
+
+          const text = await response.text();
+          let payload;
+          try { payload = JSON.parse(text); } catch { payload = { result: 'error', message: text || 'Non-JSON response' }; }
+
+          if (response.ok && payload.result === "success") {
+            document.getElementById('calculatorWrapper').style.display = 'none';
+            document.getElementById('thankYouScreen').classList.remove('hidden');
+          } else {
+            throw new Error(payload.message || `HTTP ${response.status}`);
+          }
+        } catch (error) {
+          console.error('Submission Error:', error);
+          statusMessage.textContent = `Submission failed: ${error.message}`;
+          statusMessage.style.color = "#f87171";
+          submitBtn.disabled = false;
+        }
+      });
+
+      calculate(); // initial
+    });
+
+    const formatCurrency = (num) => {
+      if (isNaN(num) || num === null) return "R 0";
+      const formatted = new Intl.NumberFormat('en-ZA', { maximumFractionDigits: 0 }).format(num);
+      return "R " + formatted;
+    };
+
+    const getVal = (id, isCurrency = false) => {
+      const el = document.getElementById(id);
+      if (!el) return isCurrency ? "R 0" : 0;
+      let value = el.value || el.placeholder || '0';
+      value = String(value).replace(/R|\s/g, '');
+      const numericValue = parseFloat(value.replace(/,/g, ''));
+      if (isNaN(numericValue)) return isCurrency ? "R 0" : 0;
+      return isCurrency ? formatCurrency(numericValue) : numericValue;
+    };
+
+    const getRawVal = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      let value = el.value || el.placeholder || '0';
+      value = String(value).replace(/R|\s/g, '');
+      return parseFloat(value.replace(/,/g, '')) || 0;
+    };
+
+    const setVal = (id, value, isCurrency = false) => {
+      const el = document.getElementById(id);
+      if (el) el.value = isCurrency ? formatCurrency(value) : value;
+    };
+
+    function calculate() {
+      const profitGoal = getRawVal('profitGoal');
+      const averageSalePrice = getRawVal('averageSalePrice');
+      const averageCommissionRate = getRawVal('averageCommissionRate') / 100;
+      const companyCurrencyCap = getRawVal('companyCurrencyCap');
+      const anticipatedTransactions = getRawVal('anticipatedTransactions');
+      const splitToMarketCenter = getRawVal('splitToMarketCenter') / 100;
+      const franchiseFeeRate = getRawVal('franchiseFeeRate') / 100;
+      const expenses = getRawVal('expenses');
+      const sellerFocused = getRawVal('sellerFocused') / 100;
+      const listingsToClosedRatio = getRawVal('listingsToClosedRatio') / 100;
+      const appointmentsToTakenRatio = getRawVal('appointmentsToTakenRatio') / 100;
+
+      // Tax
+      const tax = profitGoal * 0.25;
+
+      // Commissions per transaction
+      const avgCommissionPerTrans = averageSalePrice * averageCommissionRate;
+      const avgSplitPaidPerTrans = avgCommissionPerTrans * splitToMarketCenter;
+      const avgFranchiseFeePaid = avgCommissionPerTrans * franchiseFeeRate;
+
+      // Year totals
+      const totalSplitPaidYear = avgSplitPaidPerTrans * anticipatedTransactions;
+      const totalRoyaltyYear = avgFranchiseFeePaid * anticipatedTransactions;
+
+      // Cap applies to company split; royalty typically not capped
+      const splitAfterCap = Math.min(totalSplitPaidYear, companyCurrencyCap || 0);
+      const totalCostOfSales = (anticipatedTransactions > 0) ? (splitAfterCap + totalRoyaltyYear) : 0;
+
+      const yearlyExpenses = expenses * 12;
+
+      const gciGoalYear = profitGoal + tax + totalCostOfSales + yearlyExpenses;
+      const gciGoalMonth = gciGoalYear / 12;
+
+      const registeredYear = (avgCommissionPerTrans > 0) ? Math.ceil(gciGoalYear / avgCommissionPerTrans) : 0;
+      const registeredMonth = (registeredYear > 0) ? Math.ceil(registeredYear / 12) : 0;
+
+      const closedListingsYear = (registeredYear > 0 && sellerFocused > 0) ? Math.ceil(registeredYear * sellerFocused) : 0;
+      const listingsTakenYear = (closedListingsYear > 0 && listingsToClosedRatio > 0) ? Math.ceil(closedListingsYear / listingsToClosedRatio) : 0;
+      const listingsTakenMonth = (listingsTakenYear > 0) ? Math.ceil(listingsTakenYear / 12) : 0;
+
+      const appointmentsYear = (listingsTakenYear > 0 && appointmentsToTakenRatio > 0) ? Math.ceil(listingsTakenYear / appointmentsToTakenRatio) : 0;
+      const appointmentsMonth = (appointmentsYear > 0) ? Math.ceil(appointmentsYear / 12) : 0;
+
+      // Outputs
+      setVal('tax', tax, true);
+      setVal('avgCommissionPerTrans', avgCommissionPerTrans, true);
+      setVal('avgSplitPaidPerTrans', avgSplitPaidPerTrans, true);
+      setVal('avgFranchiseFeePaid', avgFranchiseFeePaid, true);
+      setVal('totalCostOfSales', totalCostOfSales, true);
+      setVal('yearlyExpenses', yearlyExpenses, true);
+      setVal('gciGoalYear', gciGoalYear, true);
+      setVal('gciGoalMonth', gciGoalMonth, true);
+
+      setVal('registeredYear', registeredYear);
+      setVal('registeredMonth', registeredMonth);
+      setVal('closedListingsYear', closedListingsYear);
+      setVal('listingsTakenYear', listingsTakenYear);
+      setVal('listingsTakenMonth', listingsTakenMonth);
+      setVal('appointmentsYear', appointmentsYear);
+      setVal('appointmentsMonth', appointmentsMonth);
+
+      setVal('recapAppointments', appointmentsMonth);
+      setVal('recapListingsTaken', listingsTakenMonth);
+      setVal('recapRegistered', registeredMonth);
+      setVal('recapGciGoal', gciGoalMonth, true);
+    }
+  </script>
+</body>
+</html>
+

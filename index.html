@@ -1,233 +1,467 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>KW Explore CGI — How Do I Reach My Income Goal</title>
-  <meta name="description" content="Enter your profit goal and inputs to receive a one-page PDF with calls, appointments, listings, sales, and GCI targets." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Career Growth (CGI) Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --kw:#C70000; --bg:#111; --panel:#1a1a1a; --line:#2a2a2a; --text:#eee; --muted:#aaa; --grey:#2b2b2b; }
-    * { box-sizing: border-box; }
-    body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; margin:0; display:grid; place-items:center; padding:24px; }
-    .app { width:100%; max-width:980px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
-    h1 { margin:0 0 6px 0; font-size:24px; line-height:1.2; }
-    .brand { color:var(--kw); }
-    .tag { color:var(--muted); margin:0 0 16px 0; }
-
-    .section { border:1px solid var(--line); border-radius:12px; padding:14px; margin:12px 0; background:#171717; }
-    .section h2 { margin:0 0 8px 0; font-size:16px; color:#ddd; }
-
-    .row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .row-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
-    label { display:block; font-size:13px; margin:6px 0 4px; color:#ddd; }
-    input { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:var(--grey); color:var(--text); }
-    input::placeholder { color:#888; }
-
-    .actions { display:flex; gap:12px; align-items:center; margin-top:14px; }
-    .submit { padding:12px 16px; border-radius:12px; border:none; background:var(--kw); color:#fff; font-weight:700; cursor:pointer; }
-    .muted { color:var(--muted); font-size:12px; }
-    .ok { color:#7cf27c; }
-    .err { color:#ff8b8b; }
-
-    @media (max-width:900px){ .row,.row-3 { grid-template-columns: 1fr; } }
+    body{font-family:'Inter',sans-serif;background:#333;color:#fff}
+    .calculator-container,.thank-you-container{background:#1a1a1a;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
+    .input-grey{background:#4a4a4a;color:#fff;border-color:#6b7280}
+    .input-grey::placeholder{color:#a0aec0}
+    .input-red{background:#991b1b;color:#fff;font-weight:700;border-color:#ef4444}
+    .header-bg{background:#000}
+    h1,h2,h3{color:#ef4444}
+    .btn-submit{background:#ef4444;transition:background-color .3s}
+    .btn-submit:hover{background:#dc2626}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    input[type=number]{-moz-appearance:textfield}
   </style>
 </head>
-<body>
-  <div class="app">
-    <h1><span class="brand">KW Explore</span> CGI — How Do I Reach My Income Goal</h1>
-    <p class="tag">Your PDF will be emailed to you. Contact Team Leader Dawie at KW Explore for support.</p>
+<body class="p-4 sm:p-8">
+  <div id="calculatorWrapper">
+    <div class="calculator-container max-w-4xl mx-auto p-6 sm:p-8 space-y-8">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold mb-2">Your Career Growth (CGI) Calculator</h1>
+        <p class="text-gray-300">At Keller Williams Realty, our mission statement is to build careers worth having, businesses worth owning, and lives worth living. After your cost of sales, expenses, and taxes, what amount of profit would fund the life you want to live this year?</p>
+      </div>
 
-    <form id="f" autocomplete="on" novalidate>
-      <!-- Contact Details -->
-      <section class="section">
-        <h2>Contact Details</h2>
-        <div class="row">
-          <div>
-            <label>Name</label>
-            <input name="name" required placeholder="e.g., Devin" />
-          </div>
-          <div>
-            <label>Surname</label>
-            <input name="surname" required placeholder="e.g., Lohmann" />
-          </div>
+      <!-- Your Details -->
+      <div class="space-y-4">
+        <h2 class="text-2xl font-semibold border-b-2 border-gray-700 pb-2">Your Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="name" placeholder="Name" class="w-full p-3 rounded-md input-grey" />
+          <input type="text" id="surname" placeholder="Surname" class="w-full p-3 rounded-md input-grey" />
+          <input type="email" id="email" placeholder="Email Address" class="w-full p-3 rounded-md input-grey" />
+          <input type="tel" id="contact" placeholder="Contact Number" class="w-full p-3 rounded-md input-grey" />
         </div>
-        <div class="row">
-          <div>
-            <label>Cell Number</label>
-            <input name="cell" required placeholder="e.g., +27 62 650 2292" />
-          </div>
-          <div>
-            <label>Email Address</label>
-            <input type="email" name="email" required placeholder="you@example.com" />
-          </div>
-        </div>
-      </section>
+        <p class="text-center text-gray-400 italic mt-2">Complete the Grey fields - The Red Fields will auto calculate for you to know: HOW TO REACH YOUR GOALS!</p>
+      </div>
 
-      <!-- Fund Your Life / Profit Goal + Auto Tax -->
-      <section class="section">
-        <h2>Fund Your Life — Profit Goal</h2>
-        <div class="row">
-          <div>
-            <label><b>Profit Goal (12 months)</b></label>
-            <input name="profitGoal" required inputmode="numeric" placeholder="e.g., 1200000" />
+      <!-- Main Calculator Sections -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-6">
+          <div class="space-y-2">
+            <label for="profitGoal" class="font-medium">Profit Goal</label>
+            <input type="number" id="profitGoal" placeholder="e.g., 1000000" class="w-full p-3 rounded-md input-grey" min="0" />
           </div>
-          <div>
-            <label>Estimated Taxes (auto 25%)</label>
-            <input id="taxPreview" aria-label="Estimated Taxes" value="R 0" disabled />
-          </div>
-        </div>
-        <div class="muted">Taxes are calculated automatically at <b>25% of Profit Goal</b>. No input needed.</div>
-      </section>
 
-      <!-- Cost of Sales -->
-      <section class="section">
-        <h2>Cost of Sales</h2>
-        <div class="row-3">
-          <div>
-            <label>Average Sale Price</label>
-            <input name="avgSalePrice" inputmode="numeric" placeholder="e.g., 1300000" />
-          </div>
-          <div>
-            <label>Average Commission %</label>
-            <input name="avgCommRate" placeholder="e.g., 5%" />
-          </div>
-          <div>
-            <label>Split to Market Center %</label>
-            <input name="splitToMc" placeholder="e.g., 30%" />
-          </div>
-          <div>
-            <label>Company Cap (year)</label>
-            <input name="companyCap" inputmode="numeric" placeholder="e.g., 140000" />
-          </div>
-          <div>
-            <label>Franchise Fee %</label>
-            <input name="franchiseFeeRate" placeholder="e.g., 8%" />
-          </div>
-          <div>
-            <label>Anticipated Transactions / Year</label>
-            <input name="anticTrans" inputmode="numeric" placeholder="e.g., 24" />
-          </div>
-        </div>
-        <div class="muted">Leave blank to use the defaults from your sheet.</div>
-      </section>
+          <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Cost of Sales</h3>
 
-      <!-- Expenses -->
-      <section class="section">
-        <h2>Expenses</h2>
-        <div class="row">
-          <div>
-            <label>Average Operating Expenses / Month</label>
-            <input name="expensesPerMonth" inputmode="numeric" placeholder="e.g., 30000" />
+          <div class="grid grid-cols-2 gap-4 items-end">
+            <div>
+              <label for="averageSalePrice" class="text-sm">Average Sale Price</label>
+              <input type="number" id="averageSalePrice" placeholder="e.g., 1500000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="splitToMarketCenter" class="text-sm">Split to Market Center %</label>
+              <input type="number" id="splitToMarketCenter" placeholder="e.g., 30" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="averageCommissionRate" class="text-sm">Average Commission Rate %</label>
+              <input type="number" id="averageCommissionRate" placeholder="e.g., 5.5" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="franchiseFeeRate" class="text-sm">Franchise Fee Rate %</label>
+              <input type="number" id="franchiseFeeRate" placeholder="e.g., 8" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="companyCurrencyCap" class="text-sm">Company Currency Cap</label>
+              <input type="number" id="companyCurrencyCap" placeholder="e.g., 210000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div>
+              <label for="anticipatedTransactions" class="text-sm">Anticipated No. of Trans/Yr</label>
+              <input type="number" id="anticipatedTransactions" placeholder="e.g., 24" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+            </div>
           </div>
-        </div>
-      </section>
 
-      <!-- Listing Focus & Ratios -->
-      <section class="section">
-        <h2>Listing Focus & Ratios</h2>
-        <div class="row-3">
-          <div>
-            <label>% of Business that is Seller Focused</label>
-            <input name="sellerFocus" placeholder="e.g., 100%" />
-          </div>
-          <div>
-            <label>Listings Taken → Listings Closed %</label>
-            <input name="ltToLc" placeholder="e.g., 50%" />
-          </div>
-          <div>
-            <label>Appointments → Listings Taken %</label>
-            <input name="laToLt" placeholder="e.g., 30%" />
+          <div class="grid grid-cols-1 gap-4">
+            <label class="text-sm text-gray-400">Tax (auto-calculated @ 25%)</label>
+            <input type="text" id="tax" class="w-full p-2 rounded-md input-red" readonly />
           </div>
         </div>
-      </section>
+
+        <div class="space-y-4">
+          <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Calculated Values</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm">Avg Commission/Trans</label>
+              <input type="text" id="avgCommissionPerTrans" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <label class="text-sm">Avg Split Paid/Trans</label>
+              <input type="text" id="avgSplitPaidPerTrans" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <label class="text-sm">Avg Franchise Fee Paid/Trans</label>
+              <input type="text" id="avgFranchiseFeePaid" class="w-full p-2 rounded-md input-red mt-1" readonly />
+            </div>
+          </div>
+
+          <div>
+            <label for="expenses" class="font-medium">Monthly Salaries & Operating Expenses</label>
+            <input type="number" id="expenses" placeholder="e.g., 30000" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+            <label class="text-sm text-gray-400 mt-2 block">Estimated Yearly Expenses</label>
+            <input type="text" id="yearlyExpenses" class="w-full p-2 rounded-md input-red mt-1" readonly />
+          </div>
+          <div>
+            <label class="text-sm text-gray-400">Total Estimated Cost of Sales per Year</label>
+            <input type="text" id="totalCostOfSales" class="w-full p-2 rounded-md input-red mt-1" readonly />
+          </div>
+        </div>
+      </div>
+
+      <!-- GCI -->
+      <div class="header-bg p-4 rounded-lg space-y-4 text-center">
+        <h2 class="text-2xl font-bold">Total Estimated Gross Commission Income</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+          <div>
+            <p class="font-medium">GCI Goal for the Year</p>
+            <input type="text" id="gciGoalYear" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">GCI Goal for the Month</p>
+            <input type="text" id="gciGoalMonth" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Goals -->
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold border-b-2 border-gray-700 pb-2">Activity Goals to Reach Your GCI</h2>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Registrations (Listings/Buyers)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p class="font-medium">Registered (Listings/Buyers)/Year</p>
+              <input type="text" id="registeredYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+            </div>
+            <div>
+              <p class="font-medium">Registered (Listings/Buyers)/Month</p>
+              <input type="text" id="registeredMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Listings Taken</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div class="space-y-4">
+              <div>
+                <label class="font-medium">% of Business that is Seller Focused</label>
+                <input type="number" id="sellerFocused" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+              </div>
+              <div>
+                <label class="font-medium">Your listings taken to listings closed conversation ratio will need to be: %</label>
+                <input type="number" id="listingsToClosedRatio" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium">Listings Taken/Year Needed</p>
+                <input type="text" id="listingsTakenYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Listings Taken/Month Needed</p>
+                <input type="text" id="listingsTakenMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Number of Closed Listings/Year</p>
+                <input type="text" id="closedListingsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Listing Appointments</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div>
+              <label class="font-medium">Your listings appointments to listings taken conversation ratio will need to be: %</label>
+              <input type="number" id="appointmentsToTakenRatio" placeholder="e.g., 80" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium">Listings Appointments/Year</p>
+                <input type="text" id="appointmentsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+              <div>
+                <p class="font-medium">Listings Appointments/Month</p>
+                <input type="text" id="appointmentsMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recap -->
+      <div class="header-bg p-6 rounded-lg text-center">
+        <h2 class="text-2xl font-bold mb-4">Recap - Your Monthly Goals</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div>
+            <p class="font-medium">Listings Appts</p>
+            <input type="text" id="recapAppointments" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">Listings Taken</p>
+            <input type="text" id="recapListingsTaken" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">Registered</p>
+            <input type="text" id="recapRegistered" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+          <div>
+            <p class="font-medium">GCI Goal</p>
+            <input type="text" id="recapGciGoal" class="w-full p-3 rounded-md input-red text-center text-xl" readonly />
+          </div>
+        </div>
+      </div>
 
       <!-- Submit -->
-      <section class="section">
-        <h2>Review & Send</h2>
-        <div class="muted">We’ll email your one-page plan as a PDF and CC Dawie for support.</div>
-        <div class="actions">
-          <button type="submit" id="btn" class="submit">Get My One-Page Plan</button>
-          <div id="msg" class="muted"></div>
-        </div>
-      </section>
-    </form>
+      <div class="text-center pt-4">
+        <button id="submitBtn" class="btn-submit text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg">
+          Get My Personalised Report
+        </button>
+        <p id="statusMessage" class="mt-4 text-sm"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="thankYouScreen" class="hidden">
+    <div class="thank-you-container max-w-2xl mx-auto p-8 text-center space-y-6">
+      <h1 class="text-4xl font-bold">Thank You!</h1>
+      <p class="text-xl text-gray-300">Thank you for completing the CGI Calculator.</p>
+      <p class="text-lg text-gray-400">Keep an Eye on your Mailbox for your personalised report.</p>
+      <div class="border-t border-gray-700 pt-6">
+        <p class="text-gray-300">For more information, feel free to contact KW Explore Team Leader Dawie at:</p>
+        <a href="mailto:dawie.dutoit@kwsa.co.za" class="text-xl text-red-500 hover:text-red-400">dawie.dutoit@kwsa.co.za</a>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Latest endpoint
-    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyEqwzrSre7Y_97xRnaa79SVwghJq_U7YIe_4RisO9zH-WFXZNqIsiKKTyGo3SUM5YY-Q/exec';
+    // Your deployed Apps Script Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0Ye22zyu9pzbEOYT7zqB8QZ377GQmLd_88ILSTELvqG4fbUdlEp4O3W3lG7qAivM-aQ/exec";
 
-    // Live tax preview (25% of Profit Goal)
-    const profitInput = document.querySelector('input[name="profitGoal"]');
-    const taxPreview = document.getElementById('taxPreview');
-    function formatZAR(n){
-      const x = Math.round(Number(n)||0);
-      return 'R ' + x.toLocaleString('en-ZA');
-    }
-    function updateTax(){
-      const val = (profitInput.value||'').replace(/[^0-9.]/g,'');
-      const num = Number(val||0);
-      if (taxPreview) taxPreview.value = formatZAR(num * 0.25);
-    }
-    profitInput.addEventListener('input', updateTax);
-    updateTax();
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => input.addEventListener('input', calculate));
 
-    // Form submit
-    const form = document.getElementById('f');
-    const msg  = document.getElementById('msg');
-    const btn  = document.getElementById('btn');
+      const { jsPDF } = window.jspdf;
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMessage = document.getElementById('statusMessage');
 
-    function normaliseCell(v){
-      if(!v) return v;
-      let s = v.replace(/[^0-9+]/g,'');
-      if (s.startsWith('0')) s = '+27' + s.slice(1);
-      if (!s.startsWith('+') && s.length === 10 && s[0]==='0') s = '+27' + s.slice(1);
-      return s;
-    }
-    function cleanPayload(obj){
-      const out = {};
-      for (const [k,v] of Object.entries(obj)){
-        if (v == null) continue;
-        const s = String(v).trim();
-        if (!s) continue;
-        out[k] = s;
-      }
-      return out;
-    }
+      submitBtn.addEventListener('click', async () => {
+        const name = document.getElementById('name').value.trim();
+        const surname = document.getElementById('surname').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const contact = document.getElementById('contact').value.trim();
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msg.textContent = '';
-      if (!form.reportValidity()) return;
+        if (!name || !surname || !email || !contact) {
+          statusMessage.textContent = "Please fill in all your details first.";
+          statusMessage.style.color = "#f87171";
+          return;
+        }
+        if (!/^https?:\/\//i.test(SCRIPT_URL)) {
+          statusMessage.textContent = "Error: The SCRIPT_URL is not configured correctly.";
+          statusMessage.style.color = "#f87171";
+          return;
+        }
 
-      const data = Object.fromEntries(new FormData(form).entries());
-      data.cell = normaliseCell(data.cell);
+        statusMessage.textContent = "Submitting, please wait...";
+        statusMessage.style.color = "#60a5fa";
+        submitBtn.disabled = true;
 
-      // Do NOT send estimatedTaxes — backend auto-calculates 25% of profitGoal
-      delete data.estimatedTaxes;
+        // --- Generate PDF ---
+        const doc = new jsPDF();
+        doc.setFillColor(239, 68, 68);
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Your Personalised CGI Report", 105, 18, { align: 'center' });
+        doc.setFontSize(14);
+        doc.text(`For: ${name} ${surname}`, 105, 26, { align: 'center' });
 
-      const payload = cleanPayload(data);
+        let y = 45;
+        const addSection = (title, data) => {
+          doc.setFontSize(16);
+          doc.setTextColor(0, 0, 0);
+          doc.text(title, 14, y);
+          doc.setLineWidth(0.5);
+          doc.line(14, y + 2, 196, y + 2);
+          y += 10;
+          doc.setFontSize(12);
+          data.forEach(item => {
+            doc.setTextColor(100, 116, 139);
+            doc.text(item.label, 20, y);
+            doc.setTextColor(0, 0, 0);
+            doc.text(item.value, 190, y, { align: 'right' });
+            y += 8;
+          });
+          y += 8;
+        };
 
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
+        addSection("Your Goals", [
+          { label: "Profit Goal:", value: getVal('profitGoal', true) },
+          { label: "Yearly GCI Goal:", value: getVal('gciGoalYear', true) },
+          { label: "Monthly GCI Goal:", value: getVal('gciGoalMonth', true) }
+        ]);
 
-      try {
-        await fetch(ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        msg.innerHTML = '<span class="ok">Success! Check your inbox for your PDF.</span>';
-        form.reset();
-        updateTax();
-      } catch (err) {
-        console.error(err);
-        msg.innerHTML = '<span class="err">Something went wrong. Please try again.</span>';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Get My One-Page Plan';
-      }
+        addSection("Monthly Activity Plan", [
+          { label: "Listings Appointments per Month:", value: getVal('recapAppointments') },
+          { label: "Listings Taken per Month:", value: getVal('recapListingsTaken') },
+          { label: "Registered (Listings/Buyers) per Month:", value: getVal('recapRegistered') }
+        ]);
+
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Report generated by the CGI Calculator.", 105, 285, { align: 'center' });
+
+        const pdfDataUri = doc.output('datauristring');
+        const pdfBase64 = pdfDataUri.substring(pdfDataUri.indexOf(',') + 1);
+
+        // --- Payload ---
+        const formData = {
+          name, surname, email, contact,
+          profitGoal: getVal('profitGoal', true),
+          gciGoalYear: getVal('gciGoalYear', true),
+          gciGoalMonth: getVal('gciGoalMonth', true),
+          recapAppointments: getVal('recapAppointments'),
+          recapListingsTaken: getVal('recapListingsTaken'),
+          recapRegistered: getVal('recapRegistered'),
+          pdfBase64,
+          fileName: `CGI_Report_${name}_${surname}.pdf`
+        };
+
+        try {
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' }, // avoids CORS preflight
+            body: JSON.stringify(formData)
+          });
+
+          const text = await response.text();
+          let payload;
+          try { payload = JSON.parse(text); } catch { payload = { result: 'error', message: text || 'Non-JSON response' }; }
+
+          if (response.ok && payload.result === "success") {
+            document.getElementById('calculatorWrapper').style.display = 'none';
+            document.getElementById('thankYouScreen').classList.remove('hidden');
+          } else {
+            throw new Error(payload.message || `HTTP ${response.status}`);
+          }
+        } catch (error) {
+          console.error('Submission Error:', error);
+          statusMessage.textContent = `Submission failed: ${error.message}`;
+          statusMessage.style.color = "#f87171";
+          submitBtn.disabled = false;
+        }
+      });
+
+      calculate(); // initial
     });
+
+    const formatCurrency = (num) => {
+      if (isNaN(num) || num === null) return "R 0";
+      const formatted = new Intl.NumberFormat('en-ZA', { maximumFractionDigits: 0 }).format(num);
+      return "R " + formatted;
+    };
+
+    const getVal = (id, isCurrency = false) => {
+      const el = document.getElementById(id);
+      if (!el) return isCurrency ? "R 0" : 0;
+      let value = el.value || el.placeholder || '0';
+      value = String(value).replace(/R|\s/g, '');
+      const numericValue = parseFloat(value.replace(/,/g, ''));
+      if (isNaN(numericValue)) return isCurrency ? "R 0" : 0;
+      return isCurrency ? formatCurrency(numericValue) : numericValue;
+    };
+
+    const getRawVal = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      let value = el.value || el.placeholder || '0';
+      value = String(value).replace(/R|\s/g, '');
+      return parseFloat(value.replace(/,/g, '')) || 0;
+    };
+
+    const setVal = (id, value, isCurrency = false) => {
+      const el = document.getElementById(id);
+      if (el) el.value = isCurrency ? formatCurrency(value) : value;
+    };
+
+    function calculate() {
+      const profitGoal = getRawVal('profitGoal');
+      const averageSalePrice = getRawVal('averageSalePrice');
+      const averageCommissionRate = getRawVal('averageCommissionRate') / 100;
+      const companyCurrencyCap = getRawVal('companyCurrencyCap');
+      const anticipatedTransactions = getRawVal('anticipatedTransactions');
+      const splitToMarketCenter = getRawVal('splitToMarketCenter') / 100;
+      const franchiseFeeRate = getRawVal('franchiseFeeRate') / 100;
+      const expenses = getRawVal('expenses');
+      const sellerFocused = getRawVal('sellerFocused') / 100;
+      const listingsToClosedRatio = getRawVal('listingsToClosedRatio') / 100;
+      const appointmentsToTakenRatio = getRawVal('appointmentsToTakenRatio') / 100;
+
+      // Tax
+      const tax = profitGoal * 0.25;
+
+      // Commissions per transaction
+      const avgCommissionPerTrans = averageSalePrice * averageCommissionRate;
+      const avgSplitPaidPerTrans = avgCommissionPerTrans * splitToMarketCenter;
+      const avgFranchiseFeePaid = avgCommissionPerTrans * franchiseFeeRate;
+
+      // Year totals
+      const totalSplitPaidYear = avgSplitPaidPerTrans * anticipatedTransactions;
+      const totalRoyaltyYear = avgFranchiseFeePaid * anticipatedTransactions;
+
+      // Cap applies to company split; royalty typically not capped
+      const splitAfterCap = Math.min(totalSplitPaidYear, companyCurrencyCap || 0);
+      const totalCostOfSales = (anticipatedTransactions > 0) ? (splitAfterCap + totalRoyaltyYear) : 0;
+
+      const yearlyExpenses = expenses * 12;
+
+      const gciGoalYear = profitGoal + tax + totalCostOfSales + yearlyExpenses;
+      const gciGoalMonth = gciGoalYear / 12;
+
+      const registeredYear = (avgCommissionPerTrans > 0) ? Math.ceil(gciGoalYear / avgCommissionPerTrans) : 0;
+      const registeredMonth = (registeredYear > 0) ? Math.ceil(registeredYear / 12) : 0;
+
+      const closedListingsYear = (registeredYear > 0 && sellerFocused > 0) ? Math.ceil(registeredYear * sellerFocused) : 0;
+      const listingsTakenYear = (closedListingsYear > 0 && listingsToClosedRatio > 0) ? Math.ceil(closedListingsYear / listingsToClosedRatio) : 0;
+      const listingsTakenMonth = (listingsTakenYear > 0) ? Math.ceil(listingsTakenYear / 12) : 0;
+
+      const appointmentsYear = (listingsTakenYear > 0 && appointmentsToTakenRatio > 0) ? Math.ceil(listingsTakenYear / appointmentsToTakenRatio) : 0;
+      const appointmentsMonth = (appointmentsYear > 0) ? Math.ceil(appointmentsYear / 12) : 0;
+
+      // Outputs
+      setVal('tax', tax, true);
+      setVal('avgCommissionPerTrans', avgCommissionPerTrans, true);
+      setVal('avgSplitPaidPerTrans', avgSplitPaidPerTrans, true);
+      setVal('avgFranchiseFeePaid', avgFranchiseFeePaid, true);
+      setVal('totalCostOfSales', totalCostOfSales, true);
+      setVal('yearlyExpenses', yearlyExpenses, true);
+      setVal('gciGoalYear', gciGoalYear, true);
+      setVal('gciGoalMonth', gciGoalMonth, true);
+
+      setVal('registeredYear', registeredYear);
+      setVal('registeredMonth', registeredMonth);
+      setVal('closedListingsYear', closedListingsYear);
+      setVal('listingsTakenYear', listingsTakenYear);
+      setVal('listingsTakenMonth', listingsTakenMonth);
+      setVal('appointmentsYear', appointmentsYear);
+      setVal('appointmentsMonth', appointmentsMonth);
+
+      setVal('recapAppointments', appointmentsMonth);
+      setVal('recapListingsTaken', listingsTakenMonth);
+      setVal('recapRegistered', registeredMonth);
+      setVal('recapGciGoal', gciGoalMonth, true);
+    }
   </script>
 </body>
 </html>
+

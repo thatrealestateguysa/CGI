@@ -41,10 +41,10 @@
       <section class="space-y-4">
         <h2 class="text-2xl font-semibold border-b-2 border-gray-700 pb-2">Your Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input id="name"    type="text"   placeholder="Name"           class="w-full p-3 rounded-md input-grey">
-          <input id="surname" type="text"   placeholder="Surname"        class="w-full p-3 rounded-md input-grey">
-          <input id="email"   type="email"  placeholder="Email Address"  class="w-full p-3 rounded-md input-grey">
-          <input id="contact" type="tel"    placeholder="Contact Number" class="w-full p-3 rounded-md input-grey">
+          <input id="name"    type="text"   placeholder="Name"           class="w-full p-3 rounded-md input-grey" required>
+          <input id="surname" type="text"   placeholder="Surname"        class="w-full p-3 rounded-md input-grey" required>
+          <input id="email"   type="email"  placeholder="Email Address"  class="w-full p-3 rounded-md input-grey" required>
+          <input id="contact" type="tel"    placeholder="Contact Number" class="w-full p-3 rounded-md input-grey" required>
         </div>
         <p class="text-center text-gray-400 italic mt-2">Complete the grey fields — red fields auto-calculate.</p>
       </section>
@@ -248,6 +248,8 @@
       <h1 class="text-4xl font-bold">Thank You!</h1>
       <p class="text-xl text-gray-300">We’ve received your details.</p>
       <p class="text-lg text-gray-400">Check your inbox for your personalised report.</p>
+      <a id="resultsLink" href="#" target="_blank"
+         class="inline-block underline text-red-400 hover:text-red-300">Open your Google Sheet</a>
       <div class="border-t border-gray-700 pt-6">
         <p class="text-gray-300">Questions? Contact:</p>
         <a href="mailto:dawie.dutoit@kwsa.co.za" class="text-xl text-red-500 hover:text-red-400">dawie.dutoit@kwsa.co.za</a>
@@ -256,66 +258,84 @@
   </div>
 
   <script>
-    // Latest Web App URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoihBNyExYkoustGcuPhK0U7k72oKKCOFy2zZR6fFWqTiJk7R9BJpXPHwnizTLbEQuyQ/exec";
+    // Latest Web App URL (KEEP THIS EXACT)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbAipHAzeLFlpjqG-RC2_9LSyGHEutjQDFXWvMoqHnqkBlCYVYuLoQCdXcxdE5ELqklQ/exec";
 
     document.addEventListener('DOMContentLoaded', () => {
       // Recalculate on input
       document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('input', calculate));
       calculate();
 
-      const { jsPDF } = window.jspdf;
+      const { jsPDF } = window.jspdf || {};
       const submitBtn = document.getElementById('submitBtn');
-      const statusMessage = document.getElementById('statusMessage');
+      const statusEl  = document.getElementById('statusMessage');
+
+      const flash = (msg, color="#60a5fa") => { statusEl.textContent = msg; statusEl.style.color = color; };
 
       submitBtn.addEventListener('click', onSubmit);
 
       async function onSubmit() {
-        const name = val('name').trim();
+        const name    = val('name').trim();
         const surname = val('surname').trim();
-        const email = val('email').trim();
+        const email   = val('email').trim();
         const contact = val('contact').trim();
 
-        if (!name || !surname || !email || !contact) return flash("Please fill in all your details first.", false);
-        if (!/^https?:\/\//i.test(SCRIPT_URL))     return flash("SCRIPT_URL is not configured correctly.", false);
+        if (!name || !surname || !email || !contact) {
+          flash("Please fill in name, surname, email, and contact.", "#f87171");
+          return;
+        }
+        if (!/^https?:\/\//i.test(SCRIPT_URL)) {
+          flash("SCRIPT_URL is not configured correctly.", "#f87171");
+          return;
+        }
 
-        flash("Submitting…", null);
+        flash("Preparing your report…");
         submitBtn.disabled = true;
 
-        // Build PDF
-        const doc = new jsPDF();
-        doc.setFillColor(239, 68, 68);
-        doc.rect(0, 0, 210, 30, 'F');
-        doc.setFontSize(22);
-        doc.setTextColor(255, 255, 255);
-        doc.text("Your Personalised CGI Report", 105, 18, { align: 'center' });
-        doc.setFontSize(14);
-        doc.text(`For: ${name} ${surname}`, 105, 26, { align: 'center' });
+        // Build PDF (fallback to tiny valid PDF if jsPDF fails)
+        let pdfBase64, fileName = `CGI_Report_${name}_${surname}.pdf`;
+        try {
+          if (!jsPDF) throw new Error("jsPDF not loaded");
+          const doc = new jsPDF();
+          doc.setFillColor(239, 68, 68);
+          doc.rect(0, 0, 210, 30, 'F');
+          doc.setFontSize(22);
+          doc.setTextColor(255, 255, 255);
+          doc.text("Your Personalised CGI Report", 105, 18, { align: 'center' });
+          doc.setFontSize(14);
+          doc.text(`For: ${name} ${surname}`, 105, 26, { align: 'center' });
 
-        let y = 45;
-        const addSection = (title, items) => {
-          doc.setFontSize(16); doc.setTextColor(0,0,0);
-          doc.text(title, 14, y); doc.setLineWidth(0.5); doc.line(14, y+2, 196, y+2);
-          y += 10; doc.setFontSize(12);
-          items.forEach(({label,value}) => { doc.setTextColor(100,116,139); doc.text(label, 20, y); doc.setTextColor(0,0,0); doc.text(value, 190, y, { align:'right' }); y += 8; });
-          y += 8;
-        };
+          let y = 45;
+          const addSection = (title, items) => {
+            doc.setFontSize(16); doc.setTextColor(0,0,0);
+            doc.text(title, 14, y); doc.setLineWidth(0.5); doc.line(14, y+2, 196, y+2);
+            y += 10; doc.setFontSize(12);
+            items.forEach(({label,value}) => { doc.setTextColor(100,116,139); doc.text(label, 20, y); doc.setTextColor(0,0,0); doc.text(value, 190, y, { align:'right' }); y += 8; });
+            y += 8;
+          };
 
-        addSection("Your Goals", [
-          { label: "Profit Goal:",      value: getVal('profitGoal', true) },
-          { label: "Yearly GCI Goal:",  value: getVal('gciGoalYear', true) },
-          { label: "Monthly GCI Goal:", value: getVal('gciGoalMonth', true) }
-        ]);
-        addSection("Monthly Activity Plan", [
-          { label: "Listings Appointments / Month:", value: getVal('recapAppointments') },
-          { label: "Listings Taken / Month:",        value: getVal('recapListingsTaken') },
-          { label: "Registered / Month:",            value: getVal('recapRegistered') }
-        ]);
+          addSection("Your Goals", [
+            { label: "Profit Goal:",      value: getVal('profitGoal', true) },
+            { label: "Yearly GCI Goal:",  value: getVal('gciGoalYear', true) },
+            { label: "Monthly GCI Goal:", value: getVal('gciGoalMonth', true) }
+          ]);
 
-        doc.setFontSize(10); doc.setTextColor(150,150,150);
-        doc.text("Report generated by the CGI Calculator (KW Explore).", 105, 285, { align:'center' });
+          addSection("Monthly Activity Plan", [
+            { label: "Listings Appointments / Month:", value: getVal('recapAppointments') },
+            { label: "Listings Taken / Month:",        value: getVal('recapListingsTaken') },
+            { label: "Registered / Month:",            value: getVal('recapRegistered') }
+          ]);
 
-        const pdfBase64 = doc.output('datauristring').split(',')[1];
+          doc.setFontSize(10); doc.setTextColor(150,150,150);
+          doc.text("Report generated by the CGI Calculator (KW Explore).", 105, 285, { align:'center' });
+
+          pdfBase64 = doc.output('datauristring').split(',')[1];
+        } catch (e) {
+          // ~1 KB valid PDF (base64)
+          pdfBase64 = "JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PC9UeXBlIC9DYXRhbG9nPj4KZW5kb2JqCnhyZWYKMCAyCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwMCAwMDAwMCBuIAp0cmFpbGVyCjw8L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMTAKJSVFT0Y=";
+          fileName = "CGI_Report.pdf";
+          console.warn("PDF generation failed; using fallback:", e);
+        }
 
         const payload = {
           name, surname, email, contact,
@@ -325,31 +345,36 @@
           recapAppointments: getVal('recapAppointments'),
           recapListingsTaken:getVal('recapListingsTaken'),
           recapRegistered:   getVal('recapRegistered'),
-          pdfBase64,
-          fileName: `CGI_Report_${name}_${surname}.pdf`
+          pdfBase64, fileName
         };
 
         try {
-          const res  = await fetch(SCRIPT_URL, { method:'POST', headers:{ 'Content-Type':'text/plain' }, body: JSON.stringify(payload) });
+          flash("Submitting…");
+          const res  = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' }, // simple request (no preflight)
+            body: JSON.stringify(payload)
+          });
+
           const text = await res.text();
-          const data = safeJson(text);
+          let data; try { data = JSON.parse(text); } catch { data = { result:'error', message:text||'Non-JSON response' }; }
 
           if (res.ok && data.result === 'success') {
             document.getElementById('calculatorWrapper').style.display = 'none';
             document.getElementById('thankYouScreen').classList.remove('hidden');
+            if (data.resultsSheetUrl) {
+              const link = document.getElementById('resultsLink');
+              if (link) link.href = data.resultsSheetUrl;
+            }
+            flash("Done!", "#34d399");
           } else {
             throw new Error(data.message || `HTTP ${res.status}`);
           }
         } catch (err) {
           console.error(err);
-          flash(`Submission failed: ${err.message}`, false);
+          flash(`Submission failed: ${err.message}`, "#f87171");
           submitBtn.disabled = false;
         }
-      }
-
-      function flash(msg, ok) {
-        statusMessage.textContent = msg;
-        statusMessage.style.color = ok === null ? "#60a5fa" : ok ? "#34d399" : "#f87171";
       }
     });
 
@@ -357,7 +382,6 @@
     const val = id => document.getElementById(id)?.value || "";
     const ZA  = new Intl.NumberFormat('en-ZA', { maximumFractionDigits: 0 });
     const formatCurrency = n => isNaN(n)||n===null ? "R 0" : "R " + ZA.format(n);
-    const safeJson = t => { try { return JSON.parse(t); } catch { return { result:'error', message:t||'Non-JSON response' }; } };
 
     const getVal = (id, currency=false) => {
       const el = document.getElementById(id); if (!el) return currency ? "R 0" : 0;

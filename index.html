@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Career Growth (CGI) Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -26,7 +26,7 @@
     <div class="calculator-container max-w-4xl mx-auto p-6 sm:p-8 space-y-8">
       <div class="text-center">
         <h1 class="text-3xl font-bold mb-2">Your Career Growth (CGI) Calculator</h1>
-        <p class="text-gray-300">At Keller Williams Realty, our mission statement is to build careers worth having, businesses worth owning, and lives worth living. After your cost of sales, expenses, and taxes, what amount of profit would fund the life you want to live this year?</p>
+        <p class="text-gray-300">After your cost of sales, expenses, and taxes, what amount of profit would fund the life you want to live this year?</p>
       </div>
 
       <!-- Your Details -->
@@ -38,15 +38,15 @@
           <input type="email" id="email" placeholder="Email Address" class="w-full p-3 rounded-md input-grey" />
           <input type="tel" id="contact" placeholder="Contact Number" class="w-full p-3 rounded-md input-grey" />
         </div>
-        <p class="text-center text-gray-400 italic mt-2">Complete the Grey fields - The Red Fields will auto calculate for you to know: HOW TO REACH YOUR GOALS!</p>
+        <p class="text-center text-gray-400 italic mt-2">Complete the Grey fields — Red fields auto-calculate.</p>
       </div>
 
-      <!-- Main Calculator Sections -->
+      <!-- Main Calculator -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="space-y-6">
           <div class="space-y-2">
             <label for="profitGoal" class="font-medium">Profit Goal</label>
-            <input type="number" id="profitGoal" placeholder="e.g., 1000000" class="w-full p-3 rounded-md input-grey" min="0" />
+            <input type="number" id="profitGoal" placeholder="e.g., 1000000" class="w-full p-3 rounded-md input-grey" min="0" step="any"/>
           </div>
 
           <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Cost of Sales</h3>
@@ -54,27 +54,27 @@
           <div class="grid grid-cols-2 gap-4 items-end">
             <div>
               <label for="averageSalePrice" class="text-sm">Average Sale Price</label>
-              <input type="number" id="averageSalePrice" placeholder="e.g., 1500000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="averageSalePrice" placeholder="e.g., 1500000" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div>
               <label for="splitToMarketCenter" class="text-sm">Split to Market Center %</label>
-              <input type="number" id="splitToMarketCenter" placeholder="e.g., 30" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="splitToMarketCenter" placeholder="30" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div>
               <label for="averageCommissionRate" class="text-sm">Average Commission Rate %</label>
-              <input type="number" id="averageCommissionRate" placeholder="e.g., 5.5" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="averageCommissionRate" placeholder="5.5" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div>
               <label for="franchiseFeeRate" class="text-sm">Franchise Fee Rate %</label>
-              <input type="number" id="franchiseFeeRate" placeholder="e.g., 8" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="franchiseFeeRate" placeholder="8" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div>
               <label for="companyCurrencyCap" class="text-sm">Company Currency Cap</label>
-              <input type="number" id="companyCurrencyCap" placeholder="e.g., 210000" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="companyCurrencyCap" placeholder="210000" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div>
               <label for="anticipatedTransactions" class="text-sm">Anticipated No. of Trans/Yr</label>
-              <input type="number" id="anticipatedTransactions" placeholder="e.g., 24" class="w-full p-2 rounded-md input-grey mt-1" min="0" />
+              <input type="number" id="anticipatedTransactions" placeholder="24" class="w-full p-2 rounded-md input-grey mt-1" min="0" step="1"/>
             </div>
           </div>
 
@@ -103,7 +103,7 @@
 
           <div>
             <label for="expenses" class="font-medium">Monthly Salaries & Operating Expenses</label>
-            <input type="number" id="expenses" placeholder="e.g., 30000" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+            <input type="number" id="expenses" placeholder="30000" class="w-full p-3 rounded-md input-grey mt-1" min="0" step="any"/>
             <label class="text-sm text-gray-400 mt-2 block">Estimated Yearly Expenses</label>
             <input type="text" id="yearlyExpenses" class="w-full p-2 rounded-md input-red mt-1" readonly />
           </div>
@@ -153,11 +153,11 @@
             <div class="space-y-4">
               <div>
                 <label class="font-medium">% of Business that is Seller Focused</label>
-                <input type="number" id="sellerFocused" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+                <input type="number" id="sellerFocused" placeholder="50" class="w-full p-3 rounded-md input-grey mt-1" min="0" step="any"/>
               </div>
               <div>
-                <label class="font-medium">Your listings taken to listings closed conversation ratio will need to be: %</label>
-                <input type="number" id="listingsToClosedRatio" placeholder="e.g., 50" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+                <label class="font-medium">Listings taken → listings closed ratio %</label>
+                <input type="number" id="listingsToClosedRatio" placeholder="50" class="w-full p-3 rounded-md input-grey mt-1" min="0" step="any"/>
               </div>
             </div>
             <div class="space-y-4">
@@ -170,7 +170,7 @@
                 <input type="text" id="listingsTakenMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
               </div>
               <div>
-                <p class="font-medium">Number of Closed Listings/Year</p>
+                <p class="font-medium">Closed Listings/Year</p>
                 <input type="text" id="closedListingsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
               </div>
             </div>
@@ -181,16 +181,16 @@
           <h3 class="text-xl font-semibold mb-2">Listing Appointments</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
             <div>
-              <label class="font-medium">Your listings appointments to listings taken conversation ratio will need to be: %</label>
-              <input type="number" id="appointmentsToTakenRatio" placeholder="e.g., 80" class="w-full p-3 rounded-md input-grey mt-1" min="0" />
+              <label class="font-medium">Appointments → taken ratio %</label>
+              <input type="number" id="appointmentsToTakenRatio" placeholder="80" class="w-full p-3 rounded-md input-grey mt-1" min="0" step="any"/>
             </div>
             <div class="space-y-4">
               <div>
-                <p class="font-medium">Listings Appointments/Year</p>
+                <p class="font-medium">Appointments/Year</p>
                 <input type="text" id="appointmentsYear" class="w-full p-3 rounded-md input-red mt-1" readonly />
               </div>
               <div>
-                <p class="font-medium">Listings Appointments/Month</p>
+                <p class="font-medium">Appointments/Month</p>
                 <input type="text" id="appointmentsMonth" class="w-full p-3 rounded-md input-red mt-1" readonly />
               </div>
             </div>
@@ -200,7 +200,7 @@
 
       <!-- Recap -->
       <div class="header-bg p-6 rounded-lg text-center">
-        <h2 class="text-2xl font-bold mb-4">Recap - Your Monthly Goals</h2>
+        <h2 class="text-2xl font-bold mb-4">Recap — Your Monthly Goals</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
           <div>
             <p class="font-medium">Listings Appts</p>
@@ -231,21 +231,22 @@
     </div>
   </div>
 
+  <!-- Thank You -->
   <div id="thankYouScreen" class="hidden">
     <div class="thank-you-container max-w-2xl mx-auto p-8 text-center space-y-6">
       <h1 class="text-4xl font-bold">Thank You!</h1>
-      <p class="text-xl text-gray-300">Thank you for completing the CGI Calculator.</p>
-      <p class="text-lg text-gray-400">Keep an Eye on your Mailbox for your personalised report.</p>
+      <p class="text-xl text-gray-300">We’ve received your details.</p>
+      <p class="text-lg text-gray-400">Check your inbox for your personalised report.</p>
       <div class="border-t border-gray-700 pt-6">
-        <p class="text-gray-300">For more information, feel free to contact KW Explore Team Leader Dawie at:</p>
+        <p class="text-gray-300">Questions? Contact:</p>
         <a href="mailto:dawie.dutoit@kwsa.co.za" class="text-xl text-red-500 hover:text-red-400">dawie.dutoit@kwsa.co.za</a>
       </div>
     </div>
   </div>
 
   <script>
-    // Your deployed Apps Script Web App URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0Ye22zyu9pzbEOYT7zqB8QZ377GQmLd_88ILSTELvqG4fbUdlEp4O3W3lG7qAivM-aQ/exec";
+    // Deployed Apps Script Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUDokgsPSoCeBluCdNiirsBGP33GWOYQESLyRzKCpUGWgwVUTR1NgFf2zUZ-sZqvW3pg/exec";
 
     document.addEventListener('DOMContentLoaded', () => {
       const inputs = document.querySelectorAll('input[type="number"]');
@@ -276,7 +277,7 @@
         statusMessage.style.color = "#60a5fa";
         submitBtn.disabled = true;
 
-        // --- Generate PDF ---
+        // --- Generate PDF (jsPDF) ---
         const doc = new jsPDF();
         doc.setFillColor(239, 68, 68);
         doc.rect(0, 0, 210, 30, 'F');
@@ -324,7 +325,7 @@
         const pdfDataUri = doc.output('datauristring');
         const pdfBase64 = pdfDataUri.substring(pdfDataUri.indexOf(',') + 1);
 
-        // --- Payload ---
+        // --- Payload to backend ---
         const formData = {
           name, surname, email, contact,
           profitGoal: getVal('profitGoal', true),
@@ -362,9 +363,10 @@
         }
       });
 
-      calculate(); // initial
+      calculate(); // initial run
     });
 
+    // ---- Helpers ----
     const formatCurrency = (num) => {
       if (isNaN(num) || num === null) return "R 0";
       const formatted = new Intl.NumberFormat('en-ZA', { maximumFractionDigits: 0 }).format(num);
@@ -407,19 +409,16 @@
       const listingsToClosedRatio = getRawVal('listingsToClosedRatio') / 100;
       const appointmentsToTakenRatio = getRawVal('appointmentsToTakenRatio') / 100;
 
-      // Tax
       const tax = profitGoal * 0.25;
 
-      // Commissions per transaction
       const avgCommissionPerTrans = averageSalePrice * averageCommissionRate;
       const avgSplitPaidPerTrans = avgCommissionPerTrans * splitToMarketCenter;
       const avgFranchiseFeePaid = avgCommissionPerTrans * franchiseFeeRate;
 
-      // Year totals
       const totalSplitPaidYear = avgSplitPaidPerTrans * anticipatedTransactions;
       const totalRoyaltyYear = avgFranchiseFeePaid * anticipatedTransactions;
 
-      // Cap applies to company split; royalty typically not capped
+      // Cap applies to company split only; royalty typically not capped
       const splitAfterCap = Math.min(totalSplitPaidYear, companyCurrencyCap || 0);
       const totalCostOfSales = (anticipatedTransactions > 0) ? (splitAfterCap + totalRoyaltyYear) : 0;
 
